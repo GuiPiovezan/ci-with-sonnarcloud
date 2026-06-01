@@ -1,0 +1,18 @@
+name: ci-go-sonnarcloud
+on:
+  pull_request:
+    branches:
+      - develop
+      
+jobs:
+  run-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+      - name: Run tests
+        run: go test -coverprofile=coverage.out
