@@ -1,0 +1,43 @@
+name: ci-go-sonnarcloud
+on:
+  pull_request:
+    branches:
+      - develop
+      
+jobs:
+  ci-go:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+      - name: Run tests
+        run: cd go && go test -coverprofile=coverage.out
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
+        with:
+          args: -Dsonar.projectBaseDir=go
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  ci-js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - name: Install dependencies
+        run: cd js && npm install
+      - name: Run tests
+        run: cd js && npm test
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
+        with:
+          args: -Dsonar.projectBaseDir=js
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
